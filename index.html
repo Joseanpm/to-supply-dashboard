@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Plan de Acción — TO Supply</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1e2530;
+    --border: #2a3441;
+    --red: #ff3b5c;
+    --yellow: #ffd166;
+    --green: #06d6a0;
+    --blue: #4361ee;
+    --blue-light: #4cc9f0;
+    --text: #e6edf3;
+    --text-muted: #7d8fa1;
+    --danone: #009fda;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Barlow', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--danone);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-block {
+    width: 38px; height: 38px;
+    background: var(--danone);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 18px; color: #fff;
+  }
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 700; letter-spacing: 1px;
+    color: var(--text);
+  }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .header-right {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .filter-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .filter-chip.active { border-color: var(--danone); color: var(--danone); }
+  .dot-danone { width: 7px; height: 7px; background: var(--danone); border-radius: 50%; }
+  .badge-period {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--danone);
+    letter-spacing: .5px;
+  }
+
+  /* ── LAYOUT ── */
+  .dashboard {
+    padding: 20px 24px;
+    display: grid;
+    gap: 16px;
+  }
+
+  /* Row 1 — KPI Cards */
+  .row-kpis {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp .5s ease both;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.yellow::before { background: var(--yellow); }
+  .kpi-card.blue::before { background: var(--danone); }
+
+  .kpi-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px; font-weight: 800;
+    line-height: 1;
+  }
+  .kpi-card.red .kpi-value { color: var(--red); }
+  .kpi-card.green .kpi-value { color: var(--green); }
+  .kpi-card.yellow .kpi-value { color: var(--yellow); }
+  .kpi-card.blue .kpi-value { color: var(--danone); }
+
+  .kpi-footer {
+    margin-top: 8px;
+    font-size: 11px; color: var(--text-muted);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .kpi-delta {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 6px; border-radius: 4px;
+  }
+  .kpi-delta.up { background: rgba(6,214,160,.15); color: var(--green); }
+  .kpi-delta.down { background: rgba(255,59,92,.15); color: var(--red); }
+  .kpi-delta.neutral { background: rgba(255,209,102,.15); color: var(--yellow); }
+
+  /* Row 2 — Charts */
+  .row-charts {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    animation: fadeUp .5s ease both;
+  }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: .8px;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title span { width: 3px; height: 14px; border-radius: 2px; display: inline-block; }
+  .card-title span.red { background: var(--red); }
+  .card-title span.green { background: var(--green); }
+  .card-title span.blue { background: var(--danone); }
+
+  /* Bar chart — Top Offender */
+  .bar-chart { display: flex; flex-direction: column; gap: 12px; }
+  .bar-row { display: flex; flex-direction: column; gap: 5px; }
+  .bar-header { display: flex; justify-content: space-between; font-size: 12px; }
+  .bar-puesto { font-weight: 600; color: var(--text); }
+  .bar-total { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; }
+  .bar-track {
+    height: 22px; background: var(--surface2);
+    border-radius: 4px; overflow: hidden;
+    display: flex;
+  }
+  .bar-inv {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), #ff6b85);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: #fff;
+    transition: width 1s ease;
+  }
+  .bar-vol {
+    height: 100%;
+    background: linear-gradient(90deg, var(--yellow), #ffe08a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: #000;
+  }
+  .bar-legend {
+    display: flex; gap: 14px; margin-top: 10px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Donut — Estatus */
+  .donut-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .donut-svg { width: 140px; height: 140px; }
+  .donut-center {
+    text-align: center;
+  }
+  .donut-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 38px; font-weight: 800; color: var(--green);
+    line-height: 1;
+  }
+  .donut-sub { font-size: 11px; color: var(--text-muted); }
+  .donut-legend {
+    display: flex; flex-direction: column; gap: 8px; width: 100%;
+  }
+  .donut-leg-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+  }
+  .donut-leg-left { display: flex; align-items: center; gap: 7px; }
+  .donut-leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .donut-leg-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; }
+
+  /* Rotacion por puesto */
+  .puesto-chart { display: flex; flex-direction: column; gap: 14px; }
+  .puesto-row {}
+  .puesto-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .puesto-name { font-weight: 600; }
+  .puesto-vals { display: flex; gap: 10px; }
+  .puesto-ytd { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; }
+  .puesto-ly { color: var(--text-muted); font-size: 11px; }
+  .puesto-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; position: relative; }
+  .puesto-bar-ytd { height: 100%; border-radius: 4px; }
+  .puesto-bar-ly {
+    position: absolute; top: 0; height: 100%;
+    border-radius: 4px; opacity: .4;
+  }
+
+  /* Row 3 — Action Table */
+  .row-table { }
+  .table-header-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .table-search {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px; color: var(--text-muted);
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  table.action-table {
+    width: 100%; border-collapse: collapse;
+  }
+  table.action-table thead th {
+    background: var(--surface2);
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text-muted);
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.action-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+    animation: fadeUp .4s ease both;
+  }
+  table.action-table tbody tr:hover { background: var(--surface2); }
+  table.action-table tbody td {
+    padding: 11px 12px; font-size: 12px; color: var(--text);
+    vertical-align: middle;
+  }
+
+  .sem-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .sem-badge.critico { background: rgba(255,59,92,.15); color: var(--red); border: 1px solid rgba(255,59,92,.3); }
+  .sem-badge.alerta  { background: rgba(255,209,102,.15); color: var(--yellow); border: 1px solid rgba(255,209,102,.3); }
+  .sem-badge.ok      { background: rgba(6,214,160,.15); color: var(--green); border: 1px solid rgba(6,214,160,.3); }
+
+  .est-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .est-badge.pendiente  { background: rgba(125,143,161,.1); color: var(--text-muted); border: 1px solid var(--border); }
+  .est-badge.proceso    { background: rgba(67,97,238,.15); color: var(--blue-light); border: 1px solid rgba(67,97,238,.3); }
+  .est-badge.completado { background: rgba(6,214,160,.15); color: var(--green); border: 1px solid rgba(6,214,160,.3); }
+
+  .accion-text { max-width: 260px; line-height: 1.4; color: #b0bec5; }
+  .resp-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 8px;
+    font-size: 11px; white-space: nowrap;
+  }
+  .fecha-text { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+  /* Progress mini-bar */
+  .progress-mini {
+    height: 4px; background: var(--surface2);
+    border-radius: 2px; width: 80px; overflow: hidden;
+    margin-top: 3px;
+  }
+  .progress-mini-fill { height: 100%; border-radius: 2px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .kpi-card:nth-child(1) { animation-delay: .05s; }
+  .kpi-card:nth-child(2) { animation-delay: .10s; }
+  .kpi-card:nth-child(3) { animation-delay: .15s; }
+  .kpi-card:nth-child(4) { animation-delay: .20s; }
+  .kpi-card:nth-child(5) { animation-delay: .25s; }
+
+  .row-charts .card:nth-child(1) { animation-delay: .3s; }
+  .row-charts .card:nth-child(2) { animation-delay: .35s; }
+  .row-charts .card:nth-child(3) { animation-delay: .4s; }
+
+  table.action-table tbody tr:nth-child(1) { animation-delay: .45s; }
+  table.action-table tbody tr:nth-child(2) { animation-delay: .50s; }
+  table.action-table tbody tr:nth-child(3) { animation-delay: .55s; }
+  table.action-table tbody tr:nth-child(4) { animation-delay: .60s; }
+  table.action-table tbody tr:nth-child(5) { animation-delay: .65s; }
+  table.action-table tbody tr:nth-child(6) { animation-delay: .70s; }
+  table.action-table tbody tr:nth-child(7) { animation-delay: .75s; }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-block">D</div>
+    <div>
+      <div class="header-title">PLAN DE ACCIÓN — TO SUPPLY</div>
+      <div class="header-sub">Performance HR · Seguimiento de indicadores de Rotación y Retención</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="filter-chip active"><span class="dot-danone"></span> Todas las áreas</div>
+    <div class="filter-chip">Preventa</div>
+    <div class="filter-chip">Reparto</div>
+    <div class="filter-chip">Almacén</div>
+    <div class="badge-period">ENE 2026</div>
+  </div>
+</div>
+
+<div class="dashboard">
+
+  <!-- ROW 1: KPI Cards -->
+  <div class="section-title"><span class="section-line"></span> KPIs de Rotación & Retención <span class="section-line"></span></div>
+  <div class="row-kpis">
+
+    <div class="kpi-card green">
+      <div class="kpi-label">Rotación YTD</div>
+      <div class="kpi-value">2.9%</div>
+      <div class="kpi-footer">
+        <span class="kpi-delta up">▼ vs LY</span> 3.1% año anterior
+      </div>
+    </div>
+
+    <div class="kpi-card red">
+      <div class="kpi-label">Retención</div>
+      <div class="kpi-value">85%</div>
+      <div class="kpi-footer">
+        <span class="kpi-delta down">▼ Meta</span> objetivo &gt; 90%
+      </div>
+    </div>
+
+    <div class="kpi-card yellow">
+      <div class="kpi-label">Almacén — Rotación</div>
+      <div class="kpi-value">8.3%</div>
+      <div class="kpi-footer">
+        <span class="kpi-delta up">▼ vs LY</span> 11.1% año anterior
+      </div>
+    </div>
+
+    <div class="kpi-card green">
+      <div class="kpi-label">Reparto — Rotación</div>
+      <div class="kpi-value">2.2%</div>
+      <div class="kpi-footer">
+        <span class="kpi-delta up">▼ vs LY</span> 7.0% año anterior
+      </div>
+    </div>
+
+    <div class="kpi-card blue">
+      <div class="kpi-label">% Avance Plan</div>
+      <div class="kpi-value">14%</div>
+      <div class="kpi-footer">
+        <span class="kpi-delta neutral">1/7</span> acciones completadas
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Charts -->
+  <div class="section-title"><span class="section-line"></span> Análisis por Puesto <span class="section-line"></span></div>
+  <div class="row-charts">
+
+    <!-- Top Offender Bar -->
+    <div class="card">
+      <div class="card-title"><span class="red"></span> Top Offender — Bajas por Puesto (Ene 2026)</div>
+      <div class="bar-chart">
+
+        <div class="bar-row">
+          <div class="bar-header">
+            <span class="bar-puesto">Preventa</span>
+            <span class="bar-total" style="color:var(--red)">9 bajas</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-inv" style="width:67%">Inv 67%</div>
+            <div class="bar-vol" style="width:33%">Vol 33%</div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header">
+            <span class="bar-puesto">Reparto</span>
+            <span class="bar-total" style="color:var(--green)">0 bajas</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-inv" style="width:0%"></div>
+            <div class="bar-vol" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header">
+            <span class="bar-puesto">Almacén</span>
+            <span class="bar-total" style="color:var(--yellow)">—</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-inv" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="bar-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--red)"></div> Involuntarias
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--yellow)"></div> Voluntarias
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Estatus -->
+    <div class="card">
+      <div class="card-title"><span class="blue"></span> Estatus del Plan de Acción</div>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 120 120">
+          <!-- track -->
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#1e2530" stroke-width="16"/>
+          <!-- completado (14%) -->
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#06d6a0" stroke-width="16"
+            stroke-dasharray="44 270" stroke-dashoffset="70" stroke-linecap="round"/>
+          <!-- en proceso (43%) -->
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#4cc9f0" stroke-width="16"
+            stroke-dasharray="135 179" stroke-dashoffset="26" stroke-linecap="round"/>
+          <!-- pendiente (43%) -->
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#7d8fa1" stroke-width="16"
+            stroke-dasharray="130 184" stroke-dashoffset="-109" stroke-linecap="round"/>
+          <text x="60" y="55" text-anchor="middle" fill="#e6edf3"
+            font-family="Barlow Condensed" font-size="22" font-weight="800">7</text>
+          <text x="60" y="68" text-anchor="middle" fill="#7d8fa1"
+            font-family="Barlow" font-size="8">ACCIONES</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="donut-leg-row">
+            <div class="donut-leg-left">
+              <div class="donut-leg-dot" style="background:var(--green)"></div>
+              <span style="font-size:12px">Completado</span>
+            </div>
+            <span class="donut-leg-val" style="color:var(--green)">1</span>
+          </div>
+          <div class="donut-leg-row">
+            <div class="donut-leg-left">
+              <div class="donut-leg-dot" style="background:var(--blue-light)"></div>
+              <span style="font-size:12px">En Proceso</span>
+            </div>
+            <span class="donut-leg-val" style="color:var(--blue-light)">3</span>
+          </div>
+          <div class="donut-leg-row">
+            <div class="donut-leg-left">
+              <div class="donut-leg-dot" style="background:var(--text-muted)"></div>
+              <span style="font-size:12px">Pendiente</span>
+            </div>
+            <span class="donut-leg-val" style="color:var(--text-muted)">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rotación por Puesto comparativa -->
+    <div class="card">
+      <div class="card-title"><span class="green"></span> Rotación por Puesto — YTD vs LY</div>
+      <div class="puesto-chart">
+
+        <div class="puesto-row">
+          <div class="puesto-header">
+            <span class="puesto-name">Almacén</span>
+            <div class="puesto-vals">
+              <span class="puesto-ytd" style="color:var(--yellow)">8.3%</span>
+              <span class="puesto-ly">LY 11.1%</span>
+            </div>
+          </div>
+          <div class="puesto-track">
+            <div class="puesto-bar-ly" style="background:var(--text-muted); width:100%;"></div>
+            <div class="puesto-bar-ytd" style="background:var(--yellow); width:75%;"></div>
+          </div>
+        </div>
+
+        <div class="puesto-row">
+          <div class="puesto-header">
+            <span class="puesto-name">Preventa</span>
+            <div class="puesto-vals">
+              <span class="puesto-ytd" style="color:var(--blue-light)">2.8%</span>
+              <span class="puesto-ly">LY 0%</span>
+            </div>
+          </div>
+          <div class="puesto-track">
+            <div class="puesto-bar-ytd" style="background:var(--blue-light); width:25%;"></div>
+          </div>
+        </div>
+
+        <div class="puesto-row">
+          <div class="puesto-header">
+            <span class="puesto-name">Reparto</span>
+            <div class="puesto-vals">
+              <span class="puesto-ytd" style="color:var(--green)">2.2%</span>
+              <span class="puesto-ly">LY 7.0%</span>
+            </div>
+          </div>
+          <div class="puesto-track">
+            <div class="puesto-bar-ly" style="background:var(--text-muted); width:64%;"></div>
+            <div class="puesto-bar-ytd" style="background:var(--green); width:20%;"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+          <div style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Meta global</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="flex:1; height:6px; background:var(--surface2); border-radius:3px; overflow:hidden;">
+              <div style="width:29%; height:100%; background:linear-gradient(90deg,var(--danone),var(--blue-light)); border-radius:3px;"></div>
+            </div>
+            <span style="font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; color:var(--danone)">2.9% / &lt;3.1%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Action Table -->
+  <div class="section-title"><span class="section-line"></span> Acciones Correctivas — Responsables y Seguimiento <span class="section-line"></span></div>
+  <div class="card row-table">
+    <div class="table-header-row">
+      <div class="card-title" style="margin:0"><span class="blue"></span> Detalle del Plan de Acción</div>
+      <div class="table-search">🔍 Filtrar por área, responsable o estatus…</div>
+    </div>
+
+    <table class="action-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Área</th>
+          <th>KPI</th>
+          <th>Resultado</th>
+          <th>Meta</th>
+          <th>Semáforo</th>
+          <th>Acción Correctiva</th>
+          <th>Responsable</th>
+          <th>Fecha Compromiso</th>
+          <th>Estatus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">01</td>
+          <td><strong>Preventa</strong></td>
+          <td>Rotación YTD</td>
+          <td><span style="color:var(--yellow);font-weight:700">2.8%</span></td>
+          <td style="color:var(--text-muted)">&lt; 3.0%</td>
+          <td><span class="sem-badge alerta">● Alerta</span></td>
+          <td class="accion-text">Reforzar proceso de selección y primeros 90 días. Implementar entrevistas de salida.</td>
+          <td><span class="resp-tag">HRBP Preventa</span></td>
+          <td class="fecha-text">28-Feb-26</td>
+          <td><span class="est-badge proceso">◉ En Proceso</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">02</td>
+          <td><strong>Preventa</strong></td>
+          <td>Bajas Involuntarias</td>
+          <td><span style="color:var(--red);font-weight:700">67%</span></td>
+          <td style="color:var(--text-muted)">&lt; 50%</td>
+          <td><span class="sem-badge critico">● Crítico</span></td>
+          <td class="accion-text">Revisar causas raíz con supervisores. Programa de desempeño y feedback continuo.</td>
+          <td><span class="resp-tag">Gte. Preventa</span></td>
+          <td class="fecha-text">15-Feb-26</td>
+          <td><span class="est-badge pendiente">○ Pendiente</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">03</td>
+          <td><strong>Preventa</strong></td>
+          <td>Bajas Totales</td>
+          <td><span style="color:var(--red);font-weight:700">9 bajas</span></td>
+          <td style="color:var(--text-muted)">&lt; 5 bajas</td>
+          <td><span class="sem-badge critico">● Crítico</span></td>
+          <td class="accion-text">Plan de retención focalizado. Encuesta de clima en el área.</td>
+          <td><span class="resp-tag">HRBP + Gerente</span></td>
+          <td class="fecha-text">01-Mar-26</td>
+          <td><span class="est-badge pendiente">○ Pendiente</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">04</td>
+          <td><strong>Reparto</strong></td>
+          <td>Rotación YTD</td>
+          <td><span style="color:var(--green);font-weight:700">2.2%</span></td>
+          <td style="color:var(--text-muted)">&lt; 3.0%</td>
+          <td><span class="sem-badge ok">● OK</span></td>
+          <td class="accion-text">Mantener buenas prácticas. Reconocimiento al equipo por mejora vs LY.</td>
+          <td><span class="resp-tag">HRBP Reparto</span></td>
+          <td class="fecha-text">15-Mar-26</td>
+          <td><span class="est-badge completado">✓ Completado</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">05</td>
+          <td><strong>Almacén</strong></td>
+          <td>Rotación YTD</td>
+          <td><span style="color:var(--yellow);font-weight:700">8.3%</span></td>
+          <td style="color:var(--text-muted)">&lt; 7.0%</td>
+          <td><span class="sem-badge critico">● Crítico</span></td>
+          <td class="accion-text">Diagnóstico de clima laboral. Revisión de cargas de trabajo y condiciones físicas.</td>
+          <td><span class="resp-tag">HRBP Almacén</span></td>
+          <td class="fecha-text">28-Feb-26</td>
+          <td><span class="est-badge proceso">◉ En Proceso</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">06</td>
+          <td><strong>General</strong></td>
+          <td>Retención</td>
+          <td><span style="color:var(--red);font-weight:700">85%</span></td>
+          <td style="color:var(--text-muted)">&gt; 90%</td>
+          <td><span class="sem-badge critico">● Crítico</span></td>
+          <td class="accion-text">Plan de retención integral. Revisión de beneficios y esquema de compensación.</td>
+          <td><span class="resp-tag">Director RH</span></td>
+          <td class="fecha-text">31-Mar-26</td>
+          <td><span class="est-badge pendiente">○ Pendiente</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-size:11px;">07</td>
+          <td><strong>General</strong></td>
+          <td>Rotación Global</td>
+          <td><span style="color:var(--green);font-weight:700">2.9%</span></td>
+          <td style="color:var(--text-muted)">&lt; 3.1% LY</td>
+          <td><span class="sem-badge ok">● OK</span></td>
+          <td class="accion-text">Mantener tendencia positiva. Monitoreo mensual de indicadores.</td>
+          <td><span class="resp-tag">HRBP General</span></td>
+          <td class="fecha-text">31-Mar-26</td>
+          <td><span class="est-badge proceso">◉ En Proceso</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /dashboard -->
+</body>
+</html>
